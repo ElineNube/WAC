@@ -1,0 +1,26 @@
+body, html {
+	margin: 0;
+	background-color: black;
+}
+
+h1 {
+	color: white;
+	border: 2px solid white;
+	margin: 20px;
+}
+
+p {
+	display: inline-block;
+	color: white;
+	width: 120px;
+	margin: 5px 5px 5px 50px;
+}
+
+label {
+	color: white;
+
+}
+
+table {
+	color: white;
+}
