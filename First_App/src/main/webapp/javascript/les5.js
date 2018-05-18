@@ -23,25 +23,41 @@ function initPage() {
 }
 
 function showWeather(latitude, longitude, city) {
+	document.querySelector("#cityName").innerHTML = "Het weer in " + city;
 	
-	fetch("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=3bdea21154e2c444801afd4a9bb03fa9&units=metric")
-	.then(response => response.json())
-	.then(function(myJson) {
-		localStorage.setItem('weather', JSON.stringify(myJson));
-		
-		var retrievedObject = localStorage.getItem('weather');
-		weather = JSON.parse(retrievedObject)
-		
-		
-		document.querySelector("#temperatuur").innerHTML = weather.main.temp;
-		document.querySelector("#luchtvochtigheid").innerHTML = weather.main.humidity;
-		document.querySelector("#windsnelheid").innerHTML = weather.wind.speed;
-		document.querySelector("#zonsopgang").innerHTML = Unix_timestamp(weather.sys.sunrise);
-		document.querySelector("#zonsondergang").innerHTML = Unix_timestamp(weather.sys.sunset);
-		document.querySelector("#cityName").innerHTML = "Het weer in " + city;
-		
-	});
-}
+	var weatherJson = JSON.parse(window.sessionStorage.getItem(city));
+	
+	var weatherJsonExist = true;
+	if (weatherJson == null) {
+		weatherJsonExist = false
+	}
+	
+	if (weatherJsonExist &&
+			(weatherJson.coord.lon < longitude+0.1 && weatherJson.coord.lon > longitude- 0.1) &&
+			(weatherJson.coord.lat < latitude+0.1 && weatherJson.coord.lat > latitude- 0.1) &&
+			!((new Date) - weatherJson.dt < (10*60 * 1000))) {
+				console.log('Herkent!')
+				document.querySelector("#temperatuur").innerHTML = weatherJson.main.temp;
+				document.querySelector("#luchtvochtigheid").innerHTML = weatherJson.main.humidity;
+				document.querySelector("#windsnelheid").innerHTML = weatherJson.wind.speed;
+				document.querySelector("#zonsopgang").innerHTML = Unix_timestamp(weatherJson.sys.sunrise);
+				document.querySelector("#zonsondergang").innerHTML = Unix_timestamp(weatherJson.sys.sunset);
+			} else {
+				fetch("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=3bdea21154e2c444801afd4a9bb03fa9&units=metric")
+				.then(response => response.json())
+				.then(function(myJson) {
+					console.log("API CALL")
+					window.sessionStorage.setItem(city, JSON.stringify(myJson));
+					document.querySelector("#temperatuur").innerHTML = myJson.main.temp;
+					document.querySelector("#luchtvochtigheid").innerHTML = myJson.main.humidity;
+					document.querySelector("#windsnelheid").innerHTML = myJson.wind.speed;
+					document.querySelector("#zonsopgang").innerHTML = Unix_timestamp(myJson.sys.sunrise);
+					document.querySelector("#zonsondergang").innerHTML = Unix_timestamp(myJson.sys.sunset);
+				});
+			}
+			}
+	
+	
 
 function Unix_timestamp(t) {
 	var dt = new Date(t*1000);
@@ -56,7 +72,6 @@ var table = document.getElementById("table")
 fetch("restservices/countries/")
 .then(response => response.json())
 .then(function(myJson) {
-	console.log(myJson);
 	
 	for(let value of myJson){
 		var row = table.insertRow(-1);
