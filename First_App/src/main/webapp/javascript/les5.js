@@ -23,17 +23,23 @@ function initPage() {
 }
 
 function showWeather(latitude, longitude, city) {
+	
 	fetch("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=3bdea21154e2c444801afd4a9bb03fa9&units=metric")
 	.then(response => response.json())
-	
 	.then(function(myJson) {
-		document.querySelector("#temperatuur").innerHTML = myJson.main.temp;
-		document.querySelector("#luchtvochtigheid").innerHTML = myJson.main.humidity;
-		document.querySelector("#windsnelheid").innerHTML = myJson.wind.speed;
-		document.querySelector("#zonsopgang").innerHTML = Unix_timestamp(myJson.sys.sunrise);
-		document.querySelector("#zonsondergang").innerHTML = Unix_timestamp(myJson.sys.sunset);
+		localStorage.setItem('weather', JSON.stringify(myJson));
+		
+		var retrievedObject = localStorage.getItem('weather');
+		weather = JSON.parse(retrievedObject)
+		
+		
+		document.querySelector("#temperatuur").innerHTML = weather.main.temp;
+		document.querySelector("#luchtvochtigheid").innerHTML = weather.main.humidity;
+		document.querySelector("#windsnelheid").innerHTML = weather.wind.speed;
+		document.querySelector("#zonsopgang").innerHTML = Unix_timestamp(weather.sys.sunrise);
+		document.querySelector("#zonsondergang").innerHTML = Unix_timestamp(weather.sys.sunset);
 		document.querySelector("#cityName").innerHTML = "Het weer in " + city;
-
+		
 	});
 }
 
