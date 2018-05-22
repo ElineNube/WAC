@@ -1,4 +1,4 @@
-package nl.hu.v1wac.firstapp.model;
+package nl.hu.v1wac.firstapp.persistence;
 
 
 	public class Country {
