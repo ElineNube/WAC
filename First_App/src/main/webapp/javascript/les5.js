@@ -80,16 +80,31 @@ fetch("restservices/countries/")
 		var cell3 = row.insertCell(2);
 		var cell4 = row.insertCell(3);
 		var cell5 = row.insertCell(4);
+		var cell6 = row.insertCell(5);
 		
 		cell1.innerHTML= value.Name;
 		cell2.innerHTML= value.Capital;
 		cell3.innerHTML= value.Region;
 		cell4.innerHTML= value.Surface;
 		cell5.innerHTML= value.Population;
+		cell6.innerHTML= '<input type="button" value="delete" id="delete"></input>';
 		
 		row.addEventListener("click", (function(){ 
 			showWeather(value.Lat, value.Ing, value.Capital);
 		}));
+		
+		cell6.addEventListener("click", (function(){
+			
+		var code = value.Code;
+		fetch("restservices/countries/"+ code, { method: 'DELETE' })
+		.then(function (response) {
+		if (response.ok) // response-status = 200 OK
+		console.log("Country deleted!");
+		else if (response.status == 404)
+		console.log("Customer not found!");
+		else console.log("Cannot delete customer!");
+		})
+	}));
 	}
 	
 });

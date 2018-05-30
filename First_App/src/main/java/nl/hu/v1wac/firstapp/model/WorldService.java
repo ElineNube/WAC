@@ -28,5 +28,9 @@ public class WorldService {
 	public Country getCountryByCode(String code) {
 		return countryDAO.findByCode(code);
 	}
+
+	public boolean delete(Country country) {
+		return countryDAO.delete(country);
+	}
 }
 
