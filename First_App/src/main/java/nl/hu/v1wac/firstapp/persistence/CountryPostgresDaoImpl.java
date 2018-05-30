@@ -56,7 +56,7 @@ public class CountryPostgresDaoImpl extends PostgresBaseDao implements CountryDa
 	public List<Country> findAll() {
 		try {
 			Connection conn = super.getConnection();
-			String sql = "SELECT * FROM country";
+			String sql = "SELECT * FROM country ORDER BY Name";
 			Statement statement = conn.createStatement();
 			ResultSet resultSet= statement.executeQuery(sql);
 			return putInList(resultSet);		
@@ -131,7 +131,7 @@ public class CountryPostgresDaoImpl extends PostgresBaseDao implements CountryDa
 	 				+ "region = ?,"
 	 				+ "surfacearea = ?,"
 	 				+ "population = ?,"
-	 				+ "govenmentform = ?"
+	 				+ "governmentform = ?"
 	 				+ "WHERE code = ?";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, country.getName());

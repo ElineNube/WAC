@@ -40,6 +40,10 @@ package nl.hu.v1wac.firstapp.persistence;
 			return name;
 		}
 		
+		public void setName(String name) {
+			this.name = name;
+		}
+		
 		public String getCapital() {
 			return capital;
 		}
@@ -48,12 +52,28 @@ package nl.hu.v1wac.firstapp.persistence;
 			return continent;
 		}
 		
+		public void setCapital(String cap) {
+			this.capital = cap;
+		}
+		
 		public String getRegion() {
 			return region;
 		}
 		
+		public void setRegion(String reg) {
+			this.region = reg;
+		}
+		
 		public double getSurface() {
 			return surface;
+		}
+		
+		public void setSurface(double sur) {
+			this.surface = sur;
+		}
+		
+		public void setPopulation(int pop) {
+			this.population = pop;
 		}
 		
 		public int getPopulation() {

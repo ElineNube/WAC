@@ -81,20 +81,21 @@ fetch("restservices/countries/")
 		var cell4 = row.insertCell(3);
 		var cell5 = row.insertCell(4);
 		var cell6 = row.insertCell(5);
+		var cell7 = row.insertCell(6);
 		
 		cell1.innerHTML= value.Name;
 		cell2.innerHTML= value.Capital;
 		cell3.innerHTML= value.Region;
 		cell4.innerHTML= value.Surface;
 		cell5.innerHTML= value.Population;
-		cell6.innerHTML= '<input type="button" value="delete" id="delete"></input>';
+		cell6.innerHTML= '<input type="button" value="Verwijderen" id="delete"></input>';
+		cell7.innerHTML= '<input type="button" value="Wijzigen" id="update"></input>';
 		
 		row.addEventListener("click", (function(){ 
 			showWeather(value.Lat, value.Ing, value.Capital);
 		}));
 		
-		cell6.addEventListener("click", (function(){
-			
+		cell6.addEventListener("click", (function(){	
 		var code = value.Code;
 		fetch("restservices/countries/"+ code, { method: 'DELETE' })
 		.then(function (response) {
@@ -104,7 +105,44 @@ fetch("restservices/countries/")
 		console.log("Customer not found!");
 		else console.log("Cannot delete customer!");
 		})
+		location.reload();
 	}));
+		
+		cell7.addEventListener("click", (function() {
+			var wijzigform = document.getElementById("wijzigform")
+			var row = wijzigform.insertRow(0);
+			var cell1 = row.insertCell(0);
+			var cell2 = row.insertCell(1);
+			var cell3 = row.insertCell(2);
+			var cell4 = row.insertCell(3);
+			var cell5 = row.insertCell(4);
+			var cell6 = row.insertCell(5);
+			var cell7 = row.insertCell(6);
+			
+			cell1.innerHTML='<label>Naam</label><input type="text" name="name" value="'+ value.Name + '"></input>';
+			cell2.innerHTML='<label>Hoofdstad</label><input type="text" name="capital" value="'+ value.Capital + '"></input>';
+			cell3.innerHTML='<label>Regio</label><input type="text" name="region" value="'+ value.Region + '"></input>';
+			cell4.innerHTML='<label>Oppervlakte</label><input type="text" name="surface" value="'+ value.Surface + '"></input>';
+			cell5.innerHTML='<label>Inwoners</label><input type="text" name="population" value="'+ value.Population + '"></input>';
+			cell6.innerHTML= '<input type="button" value="Opslaan" id="save"></input>';
+			cell7.innerHTML= '<input type="button" value="Annuleren" id="exit"></input>';
+			
+			
+			document.querySelector("#save").addEventListener("click", function () {
+				var code = value.Code;
+				var formData = new FormData(document.querySelector("#PUTform"));
+				var encData = new URLSearchParams(formData.entries());
+				
+				fetch("restservices/countries/"+ code, { method: 'PUT', body: encData })
+				.then(response => response.json())
+				.then(function(myJson) { console.log(myJson); })
+				location.reload();
+			});
+			
+			document.querySelector("#exit").addEventListener("click", function () {
+				wijzigform.deleteRow(this);
+			});
+		}))
 	}
 	
 });

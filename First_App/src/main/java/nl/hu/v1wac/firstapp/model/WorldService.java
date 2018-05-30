@@ -1,8 +1,6 @@
 package nl.hu.v1wac.firstapp.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+
 import java.util.List;
 
 import nl.hu.v1wac.firstapp.persistence.Country;
@@ -31,6 +29,10 @@ public class WorldService {
 
 	public boolean delete(Country country) {
 		return countryDAO.delete(country);
+	}
+	
+	public boolean update(Country country) {
+		return countryDAO.update(country);
 	}
 }
 
