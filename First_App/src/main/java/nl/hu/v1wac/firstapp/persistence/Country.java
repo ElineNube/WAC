@@ -28,6 +28,20 @@ package nl.hu.v1wac.firstapp.persistence;
 			this.longitude = lng;
 		}
 		
+		public Country(String code, String nm, String cap, String ct, String reg, double sur, int pop, String gov) {
+			this.code = code; 
+			this.iso3 = null;
+			this.name = nm;
+			this.capital = cap;
+			this.continent = ct;
+			this.region = reg;
+			this.surface = sur;
+			this.population = pop;
+			this.government = gov;
+			this.latitude = 0;
+			this.longitude = 0;
+		}
+		
 		public String getCode() {
 			return code;
 		}

@@ -1,12 +1,15 @@
 package nl.hu.v1wac.firstapp.webservices;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
 import nl.hu.v1wac.firstapp.persistence.Country;
 import nl.hu.v1wac.firstapp.model.ServiceProvider;
@@ -14,11 +17,11 @@ import nl.hu.v1wac.firstapp.model.WorldService;
 
 @Path("/countries")
 public class WorldResourse {
-
+	private WorldService service = ServiceProvider.getWorldService();
+	
 	@GET
 	@Produces("application/json")
 	public String getCountries() {
-		WorldService service = ServiceProvider.getWorldService();
 		JsonArray countryArray = buildJsonCountryArray(service.getAllCountries());
 		
 		return countryArray.toString();
@@ -48,11 +51,26 @@ public class WorldResourse {
 		return jsonArrayBuilder.build();
 	}
 	
+	@POST
+	@Produces("application/json")
+	public Response createCountry(@FormParam("code") String cd,
+	@FormParam("name") String nm,
+	@FormParam("continent") String cont,
+	@FormParam("region") String reg,
+	@FormParam("surfacearea") double sur,
+	@FormParam("population") int pop,
+	@FormParam("capital") String cap,
+	@FormParam("governmentform") String gov
+	) {
+	Country newCountry = new Country(cd, nm, cap, cont, reg, sur, pop, gov);
+	service.save(newCountry);
+	return Response.ok(newCountry).build();
+	}
+	
 	@GET
 	@Path("/largestsurfaces")
 	@Produces("application/json")
 	public String getCountriesLargestSurfaces() {
-		WorldService service = ServiceProvider.getWorldService();
 		JsonArray countryArray = buildJsonCountryArray(service.get10LargestSurfaces());
 		return countryArray.toString();
 	}
@@ -62,7 +80,6 @@ public class WorldResourse {
 	@Path("{code}")
 	@Produces("application/json")
 	public String getLandInfo(@PathParam("code")String code) {
-		WorldService service = ServiceProvider.getWorldService();
 		Country country = service.getCountryByCode(code);
 		
 		if (country == null) {
@@ -91,7 +108,6 @@ public class WorldResourse {
 	@Path("/largestpopulation")
 	@Produces("application/json")
 	public String getCountriesLargestPopulation() {
-		WorldService service = ServiceProvider.getWorldService();
 		JsonArrayBuilder jab = Json.createArrayBuilder();
 		
 		for (Country c : service.get10LargestPopulations()) {
@@ -104,6 +120,47 @@ public class WorldResourse {
 		return array.toString();
 		
 	}
+	
+	@DELETE
+	@Path("{code}")
+	@Produces("application/json")
+	public Response deleteCountry(@PathParam("code") String code) {
+		Country country = service.getCountryByCode(code);
+		if (!service.delete(country)) {
+			return Response.status(404).build();
+		}
+		return Response.ok().build();
+	}
+	
+	@PUT
+	@Path("{code}")
+	@Produces("application/json")
+	public Response updateCountry(@PathParam("code") String code,
+			@FormParam("name") String name,
+			@FormParam("capital") String cap,
+			@FormParam("region") String reg,
+			@FormParam("surface") double sur,
+			@FormParam("population") int pop) {
+		
+		Country country = service.getCountryByCode(code);
+		
+		if (country == null) {
+			Map<String, String> messages = new HashMap<String, String>();
+			messages.put("error", "Country does not exist!");
+			return Response.status(409).entity(messages).build();
+		}
+		
+		country.setName(name);
+		country.setCapital(cap);
+		country.setRegion(reg);
+		country.setSurface(sur);
+		country.setPopulation(pop);
+		
+		service.update(country);
+		
+		return Response.ok(country).build();
+	}
+	
 
 
 }

@@ -5,51 +5,27 @@ import java.util.*;
 
 public class CountryPostgresDaoImpl extends PostgresBaseDao implements CountryDao {
 
-	private List<Country> putInList(ResultSet resultSet) {
-		List<Country> list = new ArrayList<Country>();
-		try {
-			while (resultSet.next()) {
-				String code = resultSet.getString("code");
-				String iso3 = resultSet.getString("iso3");
-				String name = resultSet.getString("name");
-				String capital = resultSet.getString("capital");
-				String continent = resultSet.getString("continent");				
-				String region = resultSet.getString("region");
-				Double surface = resultSet.getDouble("surfacearea");
-				int population = resultSet.getInt("population");
-				String government = resultSet.getString("governmentform");
-				Double lat = resultSet.getDouble("latitude");
-				Double lon = resultSet.getDouble("longitude");
-				
-				Country newCountry = new Country(code, iso3, name, capital, continent, region, surface, population, government, lat, lon);
-				
-				list.add(newCountry);
-			}
-			return list;
-		} catch (SQLException e){
-	        System.out.println(e.getMessage());
-	        return null;
-		}	
-	}
 
-	public boolean save(Country country) {
+
+	public Country save(Country country) {
 		try {
 			Connection conn = getConnection();
-			String sql = "INSERT INTO country(code, name, continent, region, surface, population, governmentform) VALUES(?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO country(code, name, continent, capital, region, surfacearea, population, governmentform) VALUES(?,?, ?,?,?,?,?,?)";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, country.getCode());
 			preparedStatement.setString(2, country.getName());
 			preparedStatement.setString(3, country.getContinent());
-			preparedStatement.setString(4, country.getRegion());
-			preparedStatement.setDouble(5, country.getSurface());
-			preparedStatement.setInt(6, country.getPopulation());
-			preparedStatement.setString(7, country.getGovernment());
+			preparedStatement.setString(4, country.getCapital());
+			preparedStatement.setString(5, country.getRegion());
+			preparedStatement.setDouble(6, country.getSurface());
+			preparedStatement.setInt(7, country.getPopulation());
+			preparedStatement.setString(8, country.getGovernment());
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
-			return true;
+			return country;
 		} catch (SQLException e){
             System.out.println(e);
-            return false;
+            return null;
         }
 	}
 	
@@ -58,8 +34,32 @@ public class CountryPostgresDaoImpl extends PostgresBaseDao implements CountryDa
 			Connection conn = super.getConnection();
 			String sql = "SELECT * FROM country ORDER BY Name";
 			Statement statement = conn.createStatement();
-			ResultSet resultSet= statement.executeQuery(sql);
-			return putInList(resultSet);		
+			ResultSet rs= statement.executeQuery(sql);
+
+			 ArrayList<Country> countries = new ArrayList<>();
+
+	            while (rs.next()) {
+
+	                Country c = new Country(
+	                        rs.getString("code"),
+	                        rs.getString("iso3"),
+	                        rs.getString("name"),
+	                        rs.getString("capital"),
+	                        rs.getString("continent"),
+	                        rs.getString("region"),
+	                        rs.getDouble("surfacearea"),
+	                        rs.getInt("population"),
+	                        rs.getString("governmentform"),
+	                        rs.getDouble("latitude"),
+	                        rs.getDouble("longitude")
+	                );
+
+	                countries.add(c);
+
+	            }
+
+	            return countries;
+
 	} catch (SQLException e){
         System.out.println(e.getMessage());
         return null;
@@ -71,8 +71,33 @@ public class CountryPostgresDaoImpl extends PostgresBaseDao implements CountryDa
 			Connection conn = super.getConnection();
 			String sql = "SELECT * FROM country ORDER BY surfacearea DESC LIMIT 10";
 			Statement statement = conn.createStatement();
-			ResultSet resultSet= statement.executeQuery(sql);;
-			return putInList(resultSet);		
+			ResultSet rs = statement.executeQuery(sql);;
+			
+			ArrayList<Country> countries = new ArrayList<>();
+
+            while (rs.next()) {
+
+                Country c = new Country(
+                        rs.getString("code"),
+                        rs.getString("iso3"),
+                        rs.getString("name"),
+                        rs.getString("capital"),
+                        rs.getString("continent"),
+                        rs.getString("region"),
+                        rs.getDouble("surfacearea"),
+                        rs.getInt("population"),
+                        rs.getString("governmentform"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude")
+                );
+
+                countries.add(c);
+
+            }
+
+            return countries;
+
+            
 	} catch (SQLException e){
         System.out.println(e.getMessage());
         return null;
@@ -84,8 +109,33 @@ public class CountryPostgresDaoImpl extends PostgresBaseDao implements CountryDa
 			Connection conn = super.getConnection();
 			String sql = "SELECT * FROM country ORDER BY population DESC LIMIT 10";
 			Statement statement = conn.createStatement();
-			ResultSet resultSet= statement.executeQuery(sql);
-			return putInList(resultSet);		
+			ResultSet rs= statement.executeQuery(sql);
+			
+			ArrayList<Country> countries = new ArrayList<>();
+
+            while (rs.next()) {
+
+                Country c = new Country(
+                        rs.getString("code"),
+                        rs.getString("iso3"),
+                        rs.getString("name"),
+                        rs.getString("capital"),
+                        rs.getString("continent"),
+                        rs.getString("region"),
+                        rs.getDouble("surfacearea"),
+                        rs.getInt("population"),
+                        rs.getString("governmentform"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude")
+                );
+
+                countries.add(c);
+
+            }
+
+            return countries;
+
+            
 	} catch (SQLException e){
         System.out.println(e.getMessage());
         return null;

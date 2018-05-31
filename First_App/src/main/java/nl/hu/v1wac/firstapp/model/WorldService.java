@@ -34,5 +34,9 @@ public class WorldService {
 	public boolean update(Country country) {
 		return countryDAO.update(country);
 	}
+	
+	public Country save(Country country) {
+		return countryDAO.save(country);
+	}
 }
 

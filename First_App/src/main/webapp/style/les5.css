@@ -48,6 +48,24 @@ label {
 	color: black;
 }
 
+#form2 input {
+	text-align: left;
+	margin-bottom: 20px;
+}
+
+#form2 label {
+	float: left;
+	width: 6em;
+	text-align: right;
+	margin-bottom: 20px;
+	margin-left: 40%;
+}
+
+#form2 input[type="button"] {
+	margin-left: 40%;
+	width: 300px;
+}
+
 @media only screen and (max-width: 400px) {
 	h1 {
 	font-size:25px;
