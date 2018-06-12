@@ -95,19 +95,26 @@ fetch("restservices/countries/")
 			showWeather(value.Lat, value.Ing, value.Capital);
 		}));
 		
+		//Delete
 		cell6.addEventListener("click", (function(){	
 		var code = value.Code;
-		fetch("restservices/countries/"+ code, { method: 'DELETE' })
+		var index = this.parentElement.rowIndex;
+		var index2 = index - 1;
+		fetch("restservices/countries/"+ code, { method: 'DELETE', headers: {'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")} })
 		.then(function (response) {
-		if (response.ok) // response-status = 200 OK
-		console.log("Country deleted!");
+		if (response.ok) { // response-status = 200 OK 
+			console.log("Country deleted!");
+			table.deleteRow(index)
+		}
 		else if (response.status == 404)
-		console.log("Customer not found!");
-		else console.log("Cannot delete customer!");
+		console.log("Country not found!");
+		else console.log("Cannot delete country!");
 		})
-		location.reload();
+		
+		
 	}));
 		
+		//Update
 		cell7.addEventListener("click", (function() {
 			var wijzigform = document.getElementById("wijzigform")
 			var row = wijzigform.insertRow(0);
@@ -127,16 +134,27 @@ fetch("restservices/countries/")
 			cell6.innerHTML= '<input type="button" value="Opslaan" id="save"></input>';
 			cell7.innerHTML= '<input type="button" value="Annuleren" id="exit"></input>';
 			
+			var id = this.parentElement.rowIndex;
+			console.log(id)
 			
 			document.querySelector("#save").addEventListener("click", function () {
 				var code = value.Code;
 				var formData = new FormData(document.querySelector("#PUTform"));
 				var encData = new URLSearchParams(formData.entries());
 				
-				fetch("restservices/countries/"+ code, { method: 'PUT', body: encData })
+				fetch("restservices/countries/"+ code, { method: 'PUT', body: encData, headers: {'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")}})
 				.then(response => response.json())
-				.then(function(myJson) { console.log(myJson); })
-				location.reload();
+				.then(function(myJson) { 
+					var table = document.getElementById("table");
+					console.log(myJson.name)
+					table.rows[id].cells[0].innerHTML = myJson.name;
+					table.rows[id].cells[1].innerHTML = myJson.capital;
+					table.rows[id].cells[2].innerHTML = myJson.region;
+					table.rows[id].cells[3].innerHTML = myJson.surface;
+					table.rows[id].cells[4].innerHTML = myJson.population;
+					console.log(myJson); 
+					wijzigform.deleteRow(this);
+					})
 			});
 			
 			document.querySelector("#exit").addEventListener("click", function () {
@@ -152,9 +170,53 @@ fetch("restservices/countries/")
 document.querySelector("#post").addEventListener("click", function() {
 	var formData = new FormData(document.querySelector("#form2"));
 	var encData = new URLSearchParams(formData.entries());
-	fetch("restservices/countries", { method: 'POST', body: encData })
-	.then(response => response.json())
-	.then(function(myJson) { console.log(myJson); })
+	fetch("restservices/countries", { method: 'POST', body: encData, headers: {'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")}} )
+    .then(response => response.json())
+	.then(function(myJson) { 
+		var table = document.getElementById("table");
+		var row = table.insertRow(1);
+		var cell1 = row.insertCell(0);
+		var cell2 = row.insertCell(1);
+		var cell3 = row.insertCell(2);
+		var cell4 = row.insertCell(3);
+		var cell5 = row.insertCell(4);
+		var cell6 = row.insertCell(5);
+		var cell7 = row.insertCell(6);
+		
+		cell1.innerHTML= myJson.name;
+		cell2.innerHTML= myJson.capital;
+		cell3.innerHTML= myJson.region;
+		cell4.innerHTML= myJson.surface;
+		cell5.innerHTML= myJson.population;
+		cell6.innerHTML= '<input type="button" value="Verwijderen" id="delete"></input>';
+		cell7.innerHTML= '<input type="button" value="Wijzigen" id="update"></input>';
+		
+		console.log(myJson); })
 	console.log("saved new country")
-	location.reload();
+	
+	
 	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

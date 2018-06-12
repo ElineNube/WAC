@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import nl.hu.v1wac.firstapp.persistence.Country;
 import nl.hu.v1wac.firstapp.model.ServiceProvider;
@@ -52,8 +55,9 @@ public class WorldResourse {
 	}
 	
 	@POST
+	@RolesAllowed("user")
 	@Produces("application/json")
-	public Response createCountry(@FormParam("code") String cd,
+	public Response createCountry(@Context SecurityContext sc, @FormParam("code") String cd,
 	@FormParam("name") String nm,
 	@FormParam("continent") String cont,
 	@FormParam("region") String reg,
@@ -63,8 +67,16 @@ public class WorldResourse {
 	@FormParam("governmentform") String gov
 	) {
 	Country newCountry = new Country(cd, nm, cap, cont, reg, sur, pop, gov);
-	service.save(newCountry);
-	return Response.ok(newCountry).build();
+	
+	boolean role = sc.isUserInRole("user");
+	
+	if (role) {
+		service.save(newCountry);
+		return Response.ok(newCountry).build();
+	}
+	Map<String, String> messages = new HashMap<String, String>();
+    messages.put("error", "Account mag dit niet uitvoeren!");
+    return Response.status(409).entity(messages).build();	
 	}
 	
 	@GET
@@ -122,20 +134,28 @@ public class WorldResourse {
 	}
 	
 	@DELETE
+	@RolesAllowed("user")
 	@Path("{code}")
 	@Produces("application/json")
-	public Response deleteCountry(@PathParam("code") String code) {
+	public Response deleteCountry(@Context SecurityContext sc, @PathParam("code") String code) {
 		Country country = service.getCountryByCode(code);
-		if (!service.delete(country)) {
-			return Response.status(404).build();
+		boolean role = sc.isUserInRole("user");
+		
+		if(role) {
+			if (service.delete(country)) {
+				return Response.ok().build();
+			}
 		}
-		return Response.ok().build();
+		Map<String, String> messages = new HashMap<String, String>();
+        messages.put("error", "Account mag dit niet uitvoeren!");
+        return Response.status(409).entity(messages).build();	
 	}
 	
 	@PUT
+	@RolesAllowed("user")
 	@Path("{code}")
 	@Produces("application/json")
-	public Response updateCountry(@PathParam("code") String code,
+	public Response updateCountry(@Context SecurityContext sc, @PathParam("code") String code,
 			@FormParam("name") String name,
 			@FormParam("capital") String cap,
 			@FormParam("region") String reg,
@@ -143,22 +163,24 @@ public class WorldResourse {
 			@FormParam("population") int pop) {
 		
 		Country country = service.getCountryByCode(code);
+		boolean role = sc.isUserInRole("user");
 		
-		if (country == null) {
-			Map<String, String> messages = new HashMap<String, String>();
-			messages.put("error", "Country does not exist!");
-			return Response.status(409).entity(messages).build();
+		if (role) {
+			country.setName(name);
+			country.setCapital(cap);
+			country.setRegion(reg);
+			country.setSurface(sur);
+			country.setPopulation(pop);
+			
+			service.update(country);
+			
+			return Response.ok(country).build();
 		}
+		Map<String, String> messages = new HashMap<String, String>();
+        messages.put("error", "Account mag dit niet uitvoeren!");
+        return Response.status(409).entity(messages).build();	
 		
-		country.setName(name);
-		country.setCapital(cap);
-		country.setRegion(reg);
-		country.setSurface(sur);
-		country.setPopulation(pop);
 		
-		service.update(country);
-		
-		return Response.ok(country).build();
 	}
 	
 
